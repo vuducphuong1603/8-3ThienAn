@@ -8,7 +8,7 @@ export function renderAdminPage() {
         renderLoginPage();
         return;
     }
-    renderDashboard();
+    renderCardList();
 }
 
 function renderLoginPage() {
@@ -18,19 +18,19 @@ function renderLoginPage() {
       <div class="glass-card login-page">
         <h1>🔐 Admin Login</h1>
         <p class="subtitle">Đăng nhập để quản lý thiệp chúc mừng</p>
-        
+
         <div class="input-group">
           <label for="username">Tên đăng nhập</label>
           <input type="text" id="username" placeholder="Nhập username" autocomplete="username" />
         </div>
-        
+
         <div class="input-group">
           <label for="password">Mật khẩu</label>
           <input type="password" id="password" placeholder="Nhập mật khẩu" autocomplete="current-password" />
         </div>
-        
+
         <div id="login-error" class="error-message"></div>
-        
+
         <button class="btn-primary" id="btn-login">Đăng Nhập</button>
       </div>
     </div>
@@ -57,7 +57,6 @@ async function handleLogin() {
     btn.disabled = true;
 
     try {
-        // Hash password with SHA-256
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -82,7 +81,7 @@ async function handleLogin() {
 
         isLoggedIn = true;
         showToast('Đăng nhập thành công! 🎉', 'success');
-        renderDashboard();
+        renderCardList();
     } catch (err) {
         console.error(err);
         showError(errorEl, 'Lỗi đăng nhập, vui lòng thử lại!');
@@ -91,16 +90,157 @@ async function handleLogin() {
     }
 }
 
-async function renderDashboard() {
+// ==================== CARD LIST ====================
+
+async function renderCardList() {
+    currentCardId = null;
     const app = document.getElementById('app');
     app.innerHTML = `
     <div class="admin-page">
       <div class="admin-header">
         <h1>💐 Quản Lý Thiệp 8/3</h1>
         <div>
-          <button class="btn-secondary" id="btn-preview" style="margin-right: 8px">👁️ Xem Trước</button>
-          <button class="btn-secondary" id="btn-logout">🚪 Đăng Xuất</button>
+          <button class="btn-primary" id="btn-new-card" style="width:auto; padding: 0.5rem 1.5rem;">➕ Tạo Thiệp Mới</button>
+          <button class="btn-secondary" id="btn-logout" style="margin-left: 8px">🚪 Đăng Xuất</button>
         </div>
+      </div>
+
+      <div class="admin-section">
+        <h2>📋 Danh Sách Thiệp</h2>
+        <div id="cards-list" class="cards-grid">
+          <p style="color: var(--color-text-muted)">Đang tải...</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+        isLoggedIn = false;
+        currentCardId = null;
+        renderLoginPage();
+    });
+
+    document.getElementById('btn-new-card').addEventListener('click', createNewCard);
+
+    await loadCardList();
+}
+
+async function loadCardList() {
+    const cardsListEl = document.getElementById('cards-list');
+
+    const { data: cards, error } = await supabase
+        .from('greeting_cards')
+        .select('*, recipients(id, name, birthday)')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error(error);
+        cardsListEl.innerHTML = '<p style="color: #ff6b6b;">Lỗi tải danh sách thiệp</p>';
+        return;
+    }
+
+    if (!cards || cards.length === 0) {
+        cardsListEl.innerHTML = '<p style="color: var(--color-text-muted)">Chưa có thiệp nào. Bấm "Tạo Thiệp Mới" để bắt đầu!</p>';
+        return;
+    }
+
+    cardsListEl.innerHTML = cards.map(card => {
+        const recipientCount = card.recipients?.length || 0;
+        const photoCount = card.photo_urls?.length || 0;
+        const recipientNames = (card.recipients || []).map(r => r.name).join(', ') || 'Chưa có';
+        return `
+      <div class="card-list-item" data-id="${card.id}">
+        <h3>${card.welcome_title || 'Thiệp chưa đặt tên'}</h3>
+        <p class="card-meta">👥 ${recipientCount} người nhận &nbsp;|&nbsp; 📸 ${photoCount} ảnh</p>
+        <p class="card-preview">👤 ${recipientNames}</p>
+        ${card.sub_heading ? `<p class="card-preview">${card.sub_heading}</p>` : ''}
+        <div class="card-actions">
+          <button class="action-btn edit" data-id="${card.id}">✏️ Sửa</button>
+          <button class="action-btn delete" data-id="${card.id}">🗑️ Xóa</button>
+        </div>
+      </div>
+    `;
+    }).join('');
+
+    // Click card or edit button → open editor
+    cardsListEl.querySelectorAll('.card-list-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.action-btn')) return;
+            currentCardId = item.getAttribute('data-id');
+            renderCardEditor();
+        });
+    });
+
+    cardsListEl.querySelectorAll('.action-btn.edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentCardId = btn.getAttribute('data-id');
+            renderCardEditor();
+        });
+    });
+
+    cardsListEl.querySelectorAll('.action-btn.delete').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const id = btn.getAttribute('data-id');
+            if (confirm('Xóa thiệp này và tất cả người nhận liên quan?')) {
+                await deleteCard(id);
+            }
+        });
+    });
+}
+
+async function createNewCard() {
+    const { data, error } = await supabase
+        .from('greeting_cards')
+        .insert({ welcome_title: 'Thiệp mới' })
+        .select()
+        .single();
+
+    if (error) {
+        console.error(error);
+        showToast('Lỗi tạo thiệp mới! ❌', 'error');
+        return;
+    }
+
+    currentCardId = data.id;
+    showToast('Đã tạo thiệp mới! ✨', 'success');
+    renderCardEditor();
+}
+
+async function deleteCard(id) {
+    // Delete recipients first
+    await supabase.from('recipients').delete().eq('greeting_card_id', id);
+
+    // Delete photos from storage (subfolder)
+    const { data: files } = await supabase.storage.from('card-photos').list(id);
+    if (files && files.length > 0) {
+        await supabase.storage.from('card-photos').remove(files.map(f => `${id}/${f.name}`));
+    }
+
+    // Delete card
+    const { error } = await supabase.from('greeting_cards').delete().eq('id', id);
+    if (error) {
+        console.error(error);
+        showToast('Lỗi xóa thiệp! ❌', 'error');
+        return;
+    }
+
+    showToast('Đã xóa thiệp! 🗑️', 'success');
+    await loadCardList();
+}
+
+// ==================== CARD EDITOR ====================
+
+async function renderCardEditor() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+    <div class="admin-page">
+      <div class="admin-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="btn-secondary" id="btn-back">⬅ Quay lại</button>
+          <h1>📝 Chỉnh Sửa Thiệp</h1>
+        </div>
+        <button class="btn-secondary" id="btn-preview">👁️ Xem Trước</button>
       </div>
 
       <div class="admin-section">
@@ -164,7 +304,7 @@ async function renderDashboard() {
       </div>
 
       <div class="admin-section">
-        <h2>👥 Danh Sách Người Nhận</h2>
+        <h2>👥 Người Nhận Thiệp Này</h2>
         <div class="add-recipient-form" id="add-recipient-form">
           <input type="text" id="recipient-name" placeholder="Tên người nhận" />
           <input type="date" id="recipient-birthday" />
@@ -190,12 +330,7 @@ async function renderDashboard() {
     await loadPhotos();
 
     // Event listeners
-    document.getElementById('btn-logout').addEventListener('click', () => {
-        isLoggedIn = false;
-        currentCardId = null;
-        window.location.hash = '#admin';
-        renderLoginPage();
-    });
+    document.getElementById('btn-back').addEventListener('click', renderCardList);
 
     document.getElementById('btn-preview').addEventListener('click', () => {
         window.open(window.location.origin, '_blank');
@@ -233,7 +368,7 @@ async function loadCardData() {
     const { data, error } = await supabase
         .from('greeting_cards')
         .select('*')
-        .limit(1)
+        .eq('id', currentCardId)
         .maybeSingle();
 
     if (error) {
@@ -242,7 +377,6 @@ async function loadCardData() {
     }
 
     if (data) {
-        currentCardId = data.id;
         const fields = ['welcome_title', 'sub_heading', 'para1', 'para2', 'para3', 'para4', 'sig1', 'sig2', 'final_sub', 'final_quote'];
         fields.forEach(field => {
             const el = document.getElementById(field);
@@ -270,21 +404,11 @@ async function saveCard() {
     };
 
     try {
-        if (currentCardId) {
-            const { error } = await supabase
-                .from('greeting_cards')
-                .update(cardData)
-                .eq('id', currentCardId);
-            if (error) throw error;
-        } else {
-            const { data, error } = await supabase
-                .from('greeting_cards')
-                .insert(cardData)
-                .select()
-                .single();
-            if (error) throw error;
-            currentCardId = data.id;
-        }
+        const { error } = await supabase
+            .from('greeting_cards')
+            .update(cardData)
+            .eq('id', currentCardId);
+        if (error) throw error;
         showToast('Đã lưu thiệp thành công! ✅', 'success');
     } catch (err) {
         console.error(err);
@@ -295,13 +419,16 @@ async function saveCard() {
     btn.disabled = false;
 }
 
+// ==================== PHOTOS (per card) ====================
+
 async function loadPhotos() {
     const grid = document.getElementById('photos-grid');
 
+    // List photos in the card's subfolder
     const { data: files, error } = await supabase
         .storage
         .from('card-photos')
-        .list('', { limit: 100, sortBy: { column: 'created_at', order: 'asc' } });
+        .list(currentCardId, { limit: 100, sortBy: { column: 'created_at', order: 'asc' } });
 
     if (error) {
         console.error(error);
@@ -314,7 +441,8 @@ async function loadPhotos() {
     }
 
     grid.innerHTML = files.map(file => {
-        const url = `${SUPABASE_URL}/storage/v1/object/public/card-photos/${file.name}`;
+        const path = `${currentCardId}/${file.name}`;
+        const url = `${SUPABASE_URL}/storage/v1/object/public/card-photos/${path}`;
         return `
       <div class="photo-preview-item">
         <img src="${url}" alt="${file.name}" />
@@ -335,7 +463,7 @@ async function loadPhotos() {
     });
 
     // Update photo_urls in greeting_cards
-    updatePhotoUrls(files.map(f => f.name));
+    updatePhotoUrls(files.map(f => `${currentCardId}/${f.name}`));
 }
 
 async function handleFileUpload(files) {
@@ -346,11 +474,12 @@ async function handleFileUpload(files) {
 
     for (const file of files) {
         const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+        const path = `${currentCardId}/${fileName}`;
 
         const { error } = await supabase
             .storage
             .from('card-photos')
-            .upload(fileName, file, {
+            .upload(path, file, {
                 cacheControl: '3600',
                 upsert: false
             });
@@ -367,10 +496,12 @@ async function handleFileUpload(files) {
 }
 
 async function deletePhoto(fileName) {
+    const path = `${currentCardId}/${fileName}`;
+
     const { error } = await supabase
         .storage
         .from('card-photos')
-        .remove([fileName]);
+        .remove([path]);
 
     if (error) {
         console.error(error);
@@ -382,14 +513,16 @@ async function deletePhoto(fileName) {
     await loadPhotos();
 }
 
-async function updatePhotoUrls(fileNames) {
+async function updatePhotoUrls(paths) {
     if (!currentCardId) return;
 
     await supabase
         .from('greeting_cards')
-        .update({ photo_urls: fileNames })
+        .update({ photo_urls: paths })
         .eq('id', currentCardId);
 }
+
+// ==================== RECIPIENTS (per card) ====================
 
 async function loadRecipients() {
     const tbody = document.getElementById('recipients-list');
@@ -397,6 +530,7 @@ async function loadRecipients() {
     const { data, error } = await supabase
         .from('recipients')
         .select('*')
+        .eq('greeting_card_id', currentCardId)
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -405,7 +539,7 @@ async function loadRecipients() {
     }
 
     if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="color: var(--color-text-muted); text-align: center; padding: 20px;">Chưa có người nhận nào</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" style="color: var(--color-text-muted); text-align: center; padding: 20px;">Chưa có người nhận nào cho thiệp này</td></tr>';
         return;
     }
 
@@ -476,6 +610,8 @@ async function deleteRecipient(id) {
     showToast('Đã xóa người nhận! 🗑️', 'success');
     await loadRecipients();
 }
+
+// ==================== UTILS ====================
 
 function formatDate(dateStr) {
     const d = new Date(dateStr);
