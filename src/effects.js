@@ -90,44 +90,54 @@ export function startFloatingPhotos(photoUrls) {
         const url = photoUrls[index % photoUrls.length];
         index++;
 
-        const container = document.createElement('div');
-        container.className = 'floating-photo';
-        container.style.left = (Math.random() * 70 + 5) + '%';
-
-        const size = Math.random() * 80 + 100; // 100px - 180px
-        container.style.width = size + 'px';
-        container.style.height = size + 'px';
-
         const duration = Math.random() * 4 + 6; // 6s - 10s
-        container.style.animationDuration = duration + 's';
-        container.style.animationDelay = '0s';
 
-        // Random slight rotation
-        const rotate = Math.random() * 20 - 10;
-        container.style.setProperty('--float-rotate', rotate + 'deg');
-        // Random horizontal drift
-        const drift = Math.random() * 100 - 50;
-        container.style.setProperty('--float-drift', drift + 'px');
-
-        const img = document.createElement('img');
+        // Preload image before adding to DOM to prevent flickering
+        const img = new Image();
         img.src = url;
         img.alt = 'Ảnh kỷ niệm';
-        img.loading = 'lazy';
-        container.appendChild(img);
 
-        // Click to open lightbox
-        container.addEventListener('click', () => {
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            if (lightbox && lightboxImg) {
-                lightboxImg.src = url;
-                lightbox.classList.add('active');
-            }
-        });
+        const addToDOM = () => {
+            const container = document.createElement('div');
+            container.className = 'floating-photo';
+            container.style.left = (Math.random() * 70 + 5) + '%';
 
-        document.body.appendChild(container);
+            const size = Math.random() * 80 + 100; // 100px - 180px
+            container.style.width = size + 'px';
+            container.style.height = size + 'px';
 
-        setTimeout(() => container.remove(), duration * 1000 + 500);
+            container.style.animationDuration = duration + 's';
+
+            // Random slight rotation
+            const rotate = Math.random() * 20 - 10;
+            container.style.setProperty('--float-rotate', rotate + 'deg');
+            // Random horizontal drift
+            const drift = Math.random() * 100 - 50;
+            container.style.setProperty('--float-drift', drift + 'px');
+
+            container.appendChild(img);
+
+            // Click to open lightbox
+            container.addEventListener('click', () => {
+                const lightbox = document.getElementById('lightbox');
+                const lightboxImg = document.getElementById('lightbox-img');
+                if (lightbox && lightboxImg) {
+                    lightboxImg.src = url;
+                    lightbox.classList.add('active');
+                }
+            });
+
+            document.body.appendChild(container);
+
+            setTimeout(() => container.remove(), duration * 1000 + 500);
+        };
+
+        // If already cached, add immediately; otherwise wait for load
+        if (img.complete) {
+            addToDOM();
+        } else {
+            img.onload = addToDOM;
+        }
     }
 
     // Launch initial batch staggered
