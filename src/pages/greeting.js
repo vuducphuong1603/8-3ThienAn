@@ -10,35 +10,69 @@ export function renderGreetingPage() {
     const card = data.greeting_cards;
     const app = document.getElementById('app');
 
-    // Generate bouquet flowers
-    const flowers = [
-        { x: -90, h: 230, rot: -18, delay: 0, emoji: '🌹' },
-        { x: -50, h: 270, rot: -10, delay: 0.15, emoji: '🌷' },
-        { x: -15, h: 290, rot: -3, delay: 0.25, emoji: '🌹' },
-        { x: 20, h: 285, rot: 4, delay: 0.1, emoji: '🌷' },
-        { x: 55, h: 260, rot: 11, delay: 0.3, emoji: '🌹' },
-        { x: 90, h: 220, rot: 18, delay: 0.2, emoji: '🌷' },
-        { x: -70, h: 200, rot: -22, delay: 0.35, emoji: '🌺' },
-        { x: 75, h: 195, rot: 22, delay: 0.4, emoji: '🌺' },
-    ];
-
-    const flowerHTML = flowers.map(f => `
-        <div class="bq-stem" style="--sx:${f.x}px;--sh:${f.h}px;--sr:${f.rot}deg;--sd:${f.delay}s">
-            <span class="bq-head">${f.emoji}</span>
-            <span class="bq-leaf bq-leaf-l">🍃</span>
-            <span class="bq-leaf bq-leaf-r">🍃</span>
-        </div>
-    `).join('');
-
     app.innerHTML = `
     <div class="page-container bouquet-page">
+      <div class="bq-top-text">
+        <span class="bq-top-happy">Happy</span>
+        <span class="bq-top-wd">Women's Day</span>
+        <span class="bq-top-date">8/3</span>
+      </div>
       <div class="bq-scene">
-        <div class="bq-container">
-          <div class="bq-flowers">${flowerHTML}</div>
+        <div class="bq-bouquet">
+          <!-- Flower cluster -->
+          <div class="bq-cluster">
+            <div class="bq-row bq-row-top">
+              <span class="bq-fl" style="--d:0.1s">🌷</span>
+              <span class="bq-fl" style="--d:0.25s">🌹</span>
+              <span class="bq-fl" style="--d:0.15s">🌷</span>
+            </div>
+            <div class="bq-row bq-row-mid">
+              <span class="bq-fl" style="--d:0.3s">🌹</span>
+              <span class="bq-fl bq-fl-big" style="--d:0s">🌹</span>
+              <span class="bq-fl" style="--d:0.2s">🌹</span>
+              <span class="bq-fl" style="--d:0.35s">🌷</span>
+            </div>
+            <div class="bq-row bq-row-bot">
+              <span class="bq-fl" style="--d:0.4s">🌺</span>
+              <span class="bq-fl" style="--d:0.18s">🌷</span>
+              <span class="bq-fl" style="--d:0.28s">🌺</span>
+            </div>
+            <!-- Leaves scattered -->
+            <span class="bq-lf" style="top:25%;left:-8px;--lr:-35deg">🍃</span>
+            <span class="bq-lf" style="top:55%;left:-12px;--lr:-50deg">🍃</span>
+            <span class="bq-lf" style="top:20%;right:-8px;--lr:35deg">🍃</span>
+            <span class="bq-lf" style="top:50%;right:-12px;--lr:50deg">🍃</span>
+            <span class="bq-lf" style="top:70%;left:10%;--lr:-20deg">🍃</span>
+            <span class="bq-lf" style="top:65%;right:10%;--lr:20deg">🍃</span>
+          </div>
+
+          <!-- Stems bundle -->
+          <div class="bq-stems">
+            <div class="bq-stem-line" style="--sr:-6deg"></div>
+            <div class="bq-stem-line" style="--sr:-2deg"></div>
+            <div class="bq-stem-line" style="--sr:2deg"></div>
+            <div class="bq-stem-line" style="--sr:6deg"></div>
+            <div class="bq-stem-line" style="--sr:-4deg"></div>
+            <div class="bq-stem-line" style="--sr:4deg"></div>
+          </div>
+
+          <!-- Wrapping paper -->
           <div class="bq-wrap">
             <div class="bq-paper"></div>
-            <div class="bq-ribbon"></div>
+            <div class="bq-paper-fold-l"></div>
+            <div class="bq-paper-fold-r"></div>
+            <div class="bq-ribbon-bow">
+              <div class="bq-bow-left"></div>
+              <div class="bq-bow-right"></div>
+              <div class="bq-bow-knot"></div>
+            </div>
+            <div class="bq-ribbon-tails">
+              <div class="bq-tail-l"></div>
+              <div class="bq-tail-r"></div>
+            </div>
           </div>
+
+          <!-- Envelope -->
           <div class="bq-envelope" id="bq-envelope">
             <div class="bq-envelope-icon">💌</div>
             <p class="bq-envelope-hint">Bấm để mở thiệp</p>
