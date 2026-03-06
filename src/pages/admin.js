@@ -1,5 +1,6 @@
 import { supabase, SUPABASE_URL } from '../lib/supabase.js';
 
+const MAX_PHOTOS = 20;
 let isLoggedIn = false;
 let currentCardId = null;
 
@@ -291,10 +292,11 @@ async function renderCardEditor() {
       </div>
 
       <div class="admin-section">
-        <h2>📸 Ảnh Kỷ Niệm</h2>
+        <h2>📸 Ảnh Kỷ Niệm <span id="photo-count" style="font-size:0.85em; font-weight:normal; color: var(--color-text-muted)"></span></h2>
         <div class="upload-area" id="upload-area">
           <div class="upload-icon">📁</div>
           <p>Kéo thả ảnh vào đây hoặc bấm để chọn</p>
+          <p style="font-size:0.85em; color: var(--color-text-muted); margin-top:4px;">Tối đa ${MAX_PHOTOS} ảnh mỗi thiệp</p>
           <input type="file" id="file-input" multiple accept="image/*" style="display:none" />
         </div>
         <div id="upload-progress" style="display:none; margin-bottom: 16px;">
@@ -435,6 +437,12 @@ async function loadPhotos() {
         return;
     }
 
+    const photoCount = files ? files.length : 0;
+    const countEl = document.getElementById('photo-count');
+    const uploadArea = document.getElementById('upload-area');
+    if (countEl) countEl.textContent = `(${photoCount}/${MAX_PHOTOS})`;
+    if (uploadArea) uploadArea.style.display = photoCount >= MAX_PHOTOS ? 'none' : '';
+
     if (!files || files.length === 0) {
         grid.innerHTML = '<p style="color: var(--color-text-muted); grid-column: 1/-1;">Chưa có ảnh nào</p>';
         return;
@@ -468,6 +476,25 @@ async function loadPhotos() {
 
 async function handleFileUpload(files) {
     if (!files || files.length === 0) return;
+
+    // Check current photo count
+    const { data: existingFiles } = await supabase
+        .storage
+        .from('card-photos')
+        .list(currentCardId, { limit: 100 });
+
+    const currentCount = existingFiles ? existingFiles.length : 0;
+    const remaining = MAX_PHOTOS - currentCount;
+
+    if (remaining <= 0) {
+        showToast(`Thiệp đã đạt tối đa ${MAX_PHOTOS} ảnh! ❌`, 'error');
+        return;
+    }
+
+    if (files.length > remaining) {
+        showToast(`Chỉ có thể thêm ${remaining} ảnh nữa (tối đa ${MAX_PHOTOS})! ⚠️`, 'error');
+        return;
+    }
 
     const progress = document.getElementById('upload-progress');
     progress.style.display = 'block';
