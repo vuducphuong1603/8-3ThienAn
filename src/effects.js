@@ -83,8 +83,73 @@ export function launchConfettiBurst() {
     }
 }
 
+export function startFloatingPhotos(photoUrls) {
+    let index = 0;
+
+    function createFloatingPhoto() {
+        const url = photoUrls[index % photoUrls.length];
+        index++;
+
+        const container = document.createElement('div');
+        container.className = 'floating-photo';
+        container.style.left = (Math.random() * 70 + 5) + '%';
+
+        const size = Math.random() * 80 + 100; // 100px - 180px
+        container.style.width = size + 'px';
+        container.style.height = size + 'px';
+
+        const duration = Math.random() * 4 + 6; // 6s - 10s
+        container.style.animationDuration = duration + 's';
+        container.style.animationDelay = '0s';
+
+        // Random slight rotation
+        const rotate = Math.random() * 20 - 10;
+        container.style.setProperty('--float-rotate', rotate + 'deg');
+        // Random horizontal drift
+        const drift = Math.random() * 100 - 50;
+        container.style.setProperty('--float-drift', drift + 'px');
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'Ảnh kỷ niệm';
+        img.loading = 'lazy';
+        container.appendChild(img);
+
+        // Click to open lightbox
+        container.addEventListener('click', () => {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            if (lightbox && lightboxImg) {
+                lightboxImg.src = url;
+                lightbox.classList.add('active');
+            }
+        });
+
+        document.body.appendChild(container);
+
+        setTimeout(() => container.remove(), duration * 1000 + 500);
+    }
+
+    // Launch initial batch staggered
+    for (let i = 0; i < Math.min(photoUrls.length, 3); i++) {
+        setTimeout(createFloatingPhoto, i * 800);
+    }
+
+    // Keep creating photos
+    const interval = setInterval(createFloatingPhoto, 2000);
+    window.__floatingPhotoInterval = interval;
+}
+
+export function stopFloatingPhotos() {
+    if (window.__floatingPhotoInterval) {
+        clearInterval(window.__floatingPhotoInterval);
+        window.__floatingPhotoInterval = null;
+    }
+}
+
 export function cleanupEffects() {
     stopFallingFlowers();
     stopFloatingHearts();
-    document.querySelectorAll('.flower, .float-heart, .confetti-piece').forEach(el => el.remove());
+    stopFloatingPhotos();
+    document.querySelectorAll('.flower, .float-heart, .confetti-piece, .floating-photo').forEach(el => el.remove());
 }

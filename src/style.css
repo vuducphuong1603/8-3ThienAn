@@ -383,6 +383,362 @@ body::before {
   margin-top: var(--space-lg);
 }
 
+/* ====== BOUQUET PAGE ====== */
+.bouquet-page {
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bq-scene {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.bq-container {
+  position: relative;
+  width: 300px;
+  height: 520px;
+  animation: bqAppear 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bqAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.2) translateY(80px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Stems */
+.bq-flowers {
+  position: absolute;
+  bottom: 220px;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.bq-stem {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  height: var(--sh);
+  background: linear-gradient(to top, #2d5a27, #4a8c3f);
+  border-radius: 3px;
+  transform-origin: bottom center;
+  transform: translateX(var(--sx)) rotate(var(--sr));
+  animation: stemGrow 0.8s ease-out var(--sd) backwards,
+             stemSway 5s ease-in-out calc(var(--sd) + 1s) infinite;
+}
+
+@keyframes stemGrow {
+  from { height: 0; opacity: 0; }
+  to { height: var(--sh); opacity: 1; }
+}
+
+@keyframes stemSway {
+  0%, 100% { transform: translateX(var(--sx)) rotate(var(--sr)); }
+  50% { transform: translateX(var(--sx)) rotate(calc(var(--sr) + 3deg)); }
+}
+
+/* Flower heads */
+.bq-head {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 3.2rem;
+  filter: drop-shadow(0 0 12px rgba(255, 105, 180, 0.5));
+  animation: flowerBloom 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--sd) + 0.6s) backwards;
+}
+
+@keyframes flowerBloom {
+  from { transform: translateX(-50%) scale(0) rotate(-30deg); opacity: 0; }
+  to { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Leaves */
+.bq-leaf {
+  position: absolute;
+  font-size: 1.3rem;
+  opacity: 0.8;
+}
+
+.bq-leaf-l {
+  top: 35%;
+  left: -16px;
+  transform: rotate(-40deg);
+}
+
+.bq-leaf-r {
+  top: 55%;
+  right: -16px;
+  transform: rotate(40deg) scaleX(-1);
+}
+
+/* Wrapping paper */
+.bq-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bq-paper {
+  width: 220px;
+  height: 240px;
+  margin-left: -110px;
+  background: linear-gradient(145deg, #d4a76a 0%, #c49456 40%, #dbb87a 70%, #c49456 100%);
+  clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: bqAppear 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bq-paper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.03) 20px, rgba(255,255,255,0.03) 40px);
+  clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+}
+
+.bq-ribbon {
+  width: 50px;
+  height: 25px;
+  margin-left: -25px;
+  margin-top: -5px;
+  background: var(--color-purple-light);
+  border-radius: 0 0 25px 25px;
+  position: relative;
+  box-shadow: 0 3px 10px rgba(156, 39, 176, 0.3);
+}
+
+.bq-ribbon::before,
+.bq-ribbon::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  width: 20px;
+  height: 45px;
+  background: var(--color-purple-light);
+  border-radius: 0 0 15px 15px;
+  opacity: 0.8;
+}
+
+.bq-ribbon::before {
+  left: -5px;
+  transform: rotate(-12deg);
+}
+
+.bq-ribbon::after {
+  right: -5px;
+  transform: rotate(12deg);
+}
+
+/* Envelope on bouquet */
+.bq-envelope {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  cursor: pointer;
+  z-index: 10;
+  animation: envelopeBob 2.5s ease-in-out infinite;
+}
+
+.bq-envelope-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 15px rgba(255, 105, 180, 0.6));
+  transition: transform 0.3s ease;
+}
+
+.bq-envelope:hover .bq-envelope-icon {
+  transform: scale(1.25) rotate(-5deg);
+}
+
+.bq-envelope-hint {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--color-gold-light);
+  margin-top: 4px;
+  white-space: nowrap;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes envelopeBob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-8px); }
+}
+
+/* ====== CARD OVERLAY ====== */
+.card-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.5s ease;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.card-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.opened-card {
+  max-width: 520px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: var(--space-2xl);
+  transform: scale(0.3) rotateY(90deg);
+  transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  background: var(--gradient-card);
+  border: 1px solid rgba(255, 105, 180, 0.2);
+}
+
+.card-overlay.active .opened-card {
+  transform: scale(1) rotateY(0deg);
+}
+
+.card-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.card-close-btn:hover {
+  background: rgba(255, 105, 180, 0.3);
+  border-color: var(--color-pink);
+}
+
+.card-date {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--color-pink-light);
+  text-align: center;
+  letter-spacing: 2px;
+  margin-bottom: var(--space-sm);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: var(--space-sm);
+  line-height: 1.3;
+}
+
+.card-sub {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--color-gold);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+/* Typewriter area */
+.typewriter-area {
+  text-align: left;
+  min-height: 100px;
+}
+
+.typewriter-area .typing-line {
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+  margin-bottom: var(--space-md);
+  font-size: 0.95rem;
+  padding-right: 3px;
+  border-right: 2px solid var(--color-pink);
+  animation: blinkCursor 0.6s step-end infinite;
+}
+
+.typewriter-area .typing-line.typed-done {
+  border-right: none;
+  animation: none;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { border-color: var(--color-pink); }
+  50% { border-color: transparent; }
+}
+
+/* Signature & gift button - hidden by default, shown after typewriter */
+.card-signature {
+  text-align: right;
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: var(--color-pink-light);
+  margin-top: var(--space-lg);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.card-signature.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-gift-btn {
+  text-align: center;
+  margin-top: var(--space-xl);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.card-gift-btn.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-gift-btn .btn-primary {
+  width: auto;
+  padding: var(--space-md) var(--space-2xl);
+  font-size: 1.1rem;
+}
+
 /* ====== GIFT BOX ====== */
 .gift-section {
   margin-top: var(--space-2xl);
@@ -644,22 +1000,28 @@ body::before {
 @keyframes flyUpFromBottom {
   0% {
     opacity: 0;
-    transform: translateY(100px) scale(0.9);
-    filter: blur(4px);
+    transform: translateY(calc(100vh - 100%)) scale(0.3) rotate(-10deg);
+    filter: blur(8px);
   }
 
-  60% {
+  30% {
     opacity: 1;
-    filter: blur(0);
+    filter: blur(2px);
+    transform: translateY(40vh) scale(0.7) rotate(-3deg);
   }
 
-  80% {
-    transform: translateY(-8px) scale(1.02);
+  70% {
+    filter: blur(0);
+    transform: translateY(-15px) scale(1.05) rotate(1deg);
+  }
+
+  85% {
+    transform: translateY(5px) scale(0.98) rotate(0deg);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotate(0deg);
     filter: blur(0);
   }
 }
@@ -685,6 +1047,7 @@ body::before {
   margin-bottom: var(--space-xl);
 }
 
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -697,13 +1060,17 @@ body::before {
   overflow: hidden;
   aspect-ratio: 1;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   opacity: 0;
-  transform: translateY(100px) scale(0.9);
+  transform: translateY(calc(100vh)) scale(0.3);
 }
 
 .gallery-item.fly-in {
-  animation: flyUpFromBottom 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: flyUpFromBottom 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.gallery-item.fly-in:hover {
+  box-shadow: 0 8px 30px rgba(255, 105, 180, 0.4);
 }
 
 .gallery-item:hover {
@@ -787,6 +1154,60 @@ body::before {
 .lightbox-close:hover {
   background: rgba(255, 105, 180, 0.3);
   border-color: var(--color-pink);
+}
+
+/* ====== FLOATING PHOTOS ====== */
+.floating-photo {
+  position: fixed;
+  bottom: -200px;
+  z-index: 60;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(255, 105, 180, 0.3);
+  animation: photoFloatUp linear forwards;
+  transition: transform 0.2s ease;
+}
+
+.floating-photo:hover {
+  transform: scale(1.15) !important;
+  box-shadow: 0 8px 40px rgba(255, 105, 180, 0.6);
+  z-index: 70;
+}
+
+.floating-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes photoFloatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg) translateX(0) scale(0.5);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(-10vh) rotate(calc(var(--float-rotate) * 0.3)) translateX(calc(var(--float-drift) * 0.2)) scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-55vh) rotate(var(--float-rotate)) translateX(var(--float-drift)) scale(1);
+  }
+
+  85% {
+    opacity: 0.7;
+    transform: translateY(-95vh) rotate(calc(var(--float-rotate) * 0.5)) translateX(calc(var(--float-drift) * 0.6)) scale(0.85);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-120vh) rotate(0deg) translateX(calc(var(--float-drift) * 0.8)) scale(0.6);
+  }
 }
 
 /* ====== CONFETTI ====== */
@@ -1213,6 +1634,23 @@ body::before {
 
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bq-container {
+    transform: scale(0.75);
+    transform-origin: center center;
+  }
+
+  .card-title {
+    font-size: 1.8rem;
+  }
+
+  .card-sub {
+    font-size: 1rem;
+  }
+
+  .opened-card {
+    padding: var(--space-lg);
   }
 }
 

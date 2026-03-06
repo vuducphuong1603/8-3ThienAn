@@ -10,74 +10,150 @@ export function renderGreetingPage() {
     const card = data.greeting_cards;
     const app = document.getElementById('app');
 
-    app.innerHTML = `
-    <div class="page-container greeting-page">
-      <div class="greeting-envelope">
-        <p class="greeting-date">✦ Ngày 8 tháng 3 ✦</p>
-        <h1 class="greeting-title">${card.welcome_title || 'Chúc Mừng Ngày Quốc Tế Phụ Nữ'}</h1>
-        <p class="greeting-sub">${card.sub_heading || 'Gửi người tôi yêu thương'}</p>
-      </div>
+    // Generate bouquet flowers
+    const flowers = [
+        { x: -90, h: 230, rot: -18, delay: 0, emoji: '🌹' },
+        { x: -50, h: 270, rot: -10, delay: 0.15, emoji: '🌷' },
+        { x: -15, h: 290, rot: -3, delay: 0.25, emoji: '🌹' },
+        { x: 20, h: 285, rot: 4, delay: 0.1, emoji: '🌷' },
+        { x: 55, h: 260, rot: 11, delay: 0.3, emoji: '🌹' },
+        { x: 90, h: 220, rot: 18, delay: 0.2, emoji: '🌷' },
+        { x: -70, h: 200, rot: -22, delay: 0.35, emoji: '🌺' },
+        { x: 75, h: 195, rot: 22, delay: 0.4, emoji: '🌺' },
+    ];
 
-      <div class="glass-card greeting-body">
-        ${card.para1 ? `<p>💌 ${card.para1}</p>` : ''}
-        ${card.para2 ? `<p>🌷 ${card.para2}</p>` : ''}
-        ${card.para3 ? `<p>🌹 ${card.para3}</p>` : ''}
-        ${card.para4 ? `<p>💗 ${card.para4}</p>` : ''}
-        
-        <div class="greeting-signature">
-          ${card.sig1 ? `<p>${card.sig1}</p>` : ''}
-          ${card.sig2 ? `<p>${card.sig2}</p>` : ''}
+    const flowerHTML = flowers.map(f => `
+        <div class="bq-stem" style="--sx:${f.x}px;--sh:${f.h}px;--sr:${f.rot}deg;--sd:${f.delay}s">
+            <span class="bq-head">${f.emoji}</span>
+            <span class="bq-leaf bq-leaf-l">🍃</span>
+            <span class="bq-leaf bq-leaf-r">🍃</span>
+        </div>
+    `).join('');
+
+    app.innerHTML = `
+    <div class="page-container bouquet-page">
+      <div class="bq-scene">
+        <div class="bq-container">
+          <div class="bq-flowers">${flowerHTML}</div>
+          <div class="bq-wrap">
+            <div class="bq-paper"></div>
+            <div class="bq-ribbon"></div>
+          </div>
+          <div class="bq-envelope" id="bq-envelope">
+            <div class="bq-envelope-icon">💌</div>
+            <p class="bq-envelope-hint">Bấm để mở thiệp</p>
+          </div>
         </div>
       </div>
 
-      <div class="gift-section">
-        <p class="gift-prompt">🎁 Bấm vào hộp quà để nhận bất ngờ!</p>
-        <div class="gift-box-wrapper" id="gift-box-wrapper">
-          <div class="gift-box" id="gift-box">
-            <div class="gift-box-lid"></div>
-            <div class="gift-box-body"></div>
-            <div class="gift-sparkles">
-              ${generateSparkles()}
-            </div>
+      <!-- Card overlay -->
+      <div class="card-overlay" id="card-overlay">
+        <div class="opened-card glass-card">
+          <button class="card-close-btn" id="card-close">✕</button>
+          <p class="card-date">✦ Ngày 8 tháng 3 ✦</p>
+          <h2 class="card-title">${card.welcome_title || 'Chúc Mừng Ngày 8/3'}</h2>
+          <p class="card-sub">${card.sub_heading || 'Gửi người tôi yêu thương'}</p>
+          <div class="typewriter-area" id="typewriter-area"></div>
+          <div class="card-signature" id="card-signature">
+            ${card.sig1 ? `<p>${card.sig1}</p>` : ''}
+            ${card.sig2 ? `<p>${card.sig2}</p>` : ''}
+          </div>
+          <div class="card-gift-btn" id="card-gift-btn">
+            <button class="btn-primary" id="btn-open-gift">🎁 Mở Quà Nào!</button>
           </div>
         </div>
       </div>
     </div>
   `;
 
-    // Start effects
     startFallingFlowers();
     startFloatingHearts();
 
-    // Gift box click
-    const giftBoxWrapper = document.getElementById('gift-box-wrapper');
-    const giftBox = document.getElementById('gift-box');
+    // Paragraphs for typewriter
+    const paragraphs = [
+        card.para1 ? `💌 ${card.para1}` : '',
+        card.para2 ? `🌷 ${card.para2}` : '',
+        card.para3 ? `🌹 ${card.para3}` : '',
+        card.para4 ? `💗 ${card.para4}` : '',
+    ].filter(Boolean);
 
-    giftBoxWrapper.addEventListener('click', () => {
-        giftBox.classList.add('opened');
+    const envelope = document.getElementById('bq-envelope');
+    const overlay = document.getElementById('card-overlay');
+    const typewriterArea = document.getElementById('typewriter-area');
+    const signature = document.getElementById('card-signature');
+    const giftBtn = document.getElementById('card-gift-btn');
+    const closeBtn = document.getElementById('card-close');
+    const openGiftBtn = document.getElementById('btn-open-gift');
+
+    let typewriterActive = false;
+
+    envelope.addEventListener('click', () => {
+        overlay.classList.add('active');
+        if (!typewriterActive) {
+            typewriterActive = true;
+            setTimeout(() => {
+                typewriterSequence(typewriterArea, paragraphs, 0, () => {
+                    signature.classList.add('show');
+                    setTimeout(() => {
+                        giftBtn.classList.add('show');
+                    }, 800);
+                });
+            }, 700);
+        }
+    });
+
+    closeBtn.addEventListener('click', () => {
+        overlay.classList.remove('active');
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('active');
+    });
+
+    openGiftBtn.addEventListener('click', () => {
         launchConfetti();
-
         setTimeout(() => {
             window.location.hash = '#reveal';
-        }, 1500);
+        }, 800);
     });
 }
 
-function generateSparkles() {
-    let html = '';
-    for (let i = 0; i < 12; i++) {
-        const angle = (i / 12) * 360;
-        const distance = 60 + Math.random() * 40;
-        const tx = Math.cos(angle * Math.PI / 180) * distance;
-        const ty = Math.sin(angle * Math.PI / 180) * distance;
-        html += `<div class="sparkle" style="--tx:${tx}px;--ty:${ty}px;animation-delay:${i * 0.05}s"></div>`;
+function typewriterSequence(container, paragraphs, index, onComplete) {
+    if (index >= paragraphs.length) {
+        // Remove cursor from last paragraph
+        const lastP = container.querySelector('p:last-child');
+        if (lastP) lastP.classList.add('typed-done');
+        if (onComplete) onComplete();
+        return;
     }
-    return html;
+
+    const p = document.createElement('p');
+    p.className = 'typing-line';
+    container.appendChild(p);
+
+    // Remove cursor from previous paragraph
+    const prev = container.querySelector('p.typing-line:nth-last-child(2)');
+    if (prev) prev.classList.add('typed-done');
+
+    const text = paragraphs[index];
+    let charIndex = 0;
+
+    function type() {
+        if (charIndex < text.length) {
+            p.textContent += text.charAt(charIndex);
+            charIndex++;
+            setTimeout(type, 35);
+        } else {
+            setTimeout(() => {
+                typewriterSequence(container, paragraphs, index + 1, onComplete);
+            }, 400);
+        }
+    }
+    type();
 }
 
 function launchConfetti() {
     const colors = ['#ff69b4', '#e91e63', '#ffd700', '#9c27b0', '#ff6b9d', '#ce93d8', '#ffb6c1'];
-
     for (let i = 0; i < 50; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti-piece';
@@ -89,7 +165,6 @@ function launchConfetti() {
         confetti.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
         confetti.style.animationDelay = (Math.random() * 0.5) + 's';
         document.body.appendChild(confetti);
-
         setTimeout(() => confetti.remove(), 4000);
     }
 }
