@@ -235,6 +235,27 @@ body::before {
   color: var(--color-text-muted);
 }
 
+/* Date input mobile fix */
+.input-group input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color-scheme: dark;
+  min-height: 48px;
+  max-width: 100%;
+}
+
+.input-group input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.input-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 0;
+}
+
 .btn-primary {
   width: 100%;
   padding: var(--space-md) var(--space-xl);
@@ -1790,6 +1811,15 @@ body::before {
 @media (max-width: 480px) {
   .birthday-page h1 {
     font-size: 1.6rem;
+  }
+
+  .birthday-page {
+    max-width: 100%;
+  }
+
+  .input-group input {
+    font-size: 0.9rem;
+    padding: var(--space-md);
   }
 
   .greeting-title {
