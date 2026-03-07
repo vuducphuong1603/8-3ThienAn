@@ -718,7 +718,7 @@ body::before {
 .card-date {
   font-family: var(--font-heading);
   font-size: 1rem;
-  color: var(--color-pink-light);
+  color: var(--color-pink-dark);
   text-align: center;
   letter-spacing: 2px;
   margin-bottom: var(--space-sm);
@@ -739,7 +739,7 @@ body::before {
 .card-sub {
   font-family: var(--font-heading);
   font-size: 1.3rem;
-  color: var(--color-gold);
+  color: #b07d0a;
   text-align: center;
   margin-bottom: var(--space-xl);
 }
@@ -782,7 +782,10 @@ body::before {
   text-align: right;
   font-family: var(--font-heading);
   font-size: 1.2rem;
-  color: var(--color-pink-light);
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-top: var(--space-lg);
   opacity: 0;
   transform: translateY(15px);
@@ -1953,4 +1956,80 @@ body::before {
   --border-medium: rgba(100, 149, 237, 0.16);
   --gradient-main: linear-gradient(135deg, #6495ED 0%, #265AFF 50%, #87a5e4 100%);
   --gradient-warm: linear-gradient(135deg, #9DBBFE 0%, #6495ED 50%, #87a5e4 100%);
+}
+
+[data-theme="ocean-blue"] body,
+[data-theme="ocean-blue"] {
+  background: url('/blue-flowers-bg.jpeg') center/cover no-repeat fixed;
+}
+
+/* Ocean blue: hide only bouquet image */
+[data-theme="ocean-blue"] .bq-image {
+  display: none;
+}
+
+/* Ocean blue: make envelope button static (not absolute) since image is hidden */
+[data-theme="ocean-blue"] .bq-card-tag {
+  position: static;
+  transform: none;
+  margin-top: var(--space-lg);
+}
+
+[data-theme="ocean-blue"] .bq-card-tag:hover {
+  transform: scale(1.12) rotate(-3deg);
+}
+
+/* Ocean blue: style envelope button in blue */
+[data-theme="ocean-blue"] .bq-card-tag-inner {
+  background: linear-gradient(145deg, #e8f0ff 0%, #c8dbff 50%, #a8c4ff 100%);
+  border-color: #6495ED;
+  box-shadow: 0 4px 18px rgba(100, 149, 237, 0.4),
+    0 0 25px rgba(100, 149, 237, 0.2);
+}
+
+[data-theme="ocean-blue"] .bq-card-tag-text {
+  color: #2b5cc7;
+}
+
+/* Ocean blue: enlarge the opened card */
+[data-theme="ocean-blue"] .opened-card {
+  max-width: 680px;
+  padding: var(--space-3xl);
+}
+
+/* Ocean blue: make title text readable on busy background */
+[data-theme="ocean-blue"] .bq-top-happy {
+  background: linear-gradient(135deg, #fff 0%, #e0ecff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 50, 0.7));
+  font-size: 4rem;
+}
+
+[data-theme="ocean-blue"] .bq-top-wd {
+  color: #fff;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 50, 0.7));
+  font-size: 3.5rem;
+}
+
+[data-theme="ocean-blue"] .bq-top-date {
+  background: linear-gradient(135deg, #fff 0%, #c8dfff 50%, #fff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 50, 0.7));
+  font-size: 5rem;
+}
+
+/* Ocean blue: layout */
+[data-theme="ocean-blue"] .bouquet-page {
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding-bottom: var(--space-2xl);
+}
+
+[data-theme="ocean-blue"] .bq-top-text {
+  margin-bottom: var(--space-xl);
 }

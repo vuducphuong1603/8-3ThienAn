@@ -1,6 +1,7 @@
 // Visual effects for the greeting app
 
 export function startFallingFlowers() {
+    if (document.documentElement.getAttribute('data-theme') === 'ocean-blue') return;
     const flowers = ['🌸', '🌺', '🌷', '🌹', '💐', '🏵️', '💮'];
 
     function createFlower() {
