@@ -1370,7 +1370,7 @@ body::before {
   overflow: hidden;
   border: 3px solid rgba(var(--accent-rgb), 0.35);
   box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.25);
-  animation: photoFloatUp linear forwards;
+  animation: photoFloatUp linear both;
   will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -1430,7 +1430,7 @@ body::before {
   border: 1px solid rgba(var(--accent-rgb), 0.25);
   white-space: nowrap;
   pointer-events: none;
-  animation: wishFloatUp linear forwards;
+  animation: wishFloatUp linear both;
   will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -1848,7 +1848,7 @@ body::before {
   z-index: 50;
   pointer-events: none;
   font-size: 1.2rem;
-  animation: floatHeart linear forwards;
+  animation: floatHeart linear both;
   will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;

@@ -78,9 +78,13 @@ function renderDefaultReveal(app, card, photos, wishes) {
 // ========== HEART DRAW REVEAL ==========
 
 function renderHeartReveal(app, card, photos, wishes) {
+    const data = window.__greetingData;
+    const hideHeartText = data && data.birthday === '2004-03-27';
+
     app.innerHTML = `
     <div class="page-container reveal-page heart-reveal-page">
       <canvas id="heart-canvas"></canvas>
+      ${hideHeartText ? '' : `
       <div class="heart-content" id="heart-content">
         <h1 class="heart-title">${card.final_sub || 'Chúc Mừng Ngày 8/3!'}</h1>
         ${card.final_quote ? `<div class="heart-quote">${card.final_quote}</div>` : ''}
@@ -89,6 +93,7 @@ function renderHeartReveal(app, card, photos, wishes) {
           ${card.sig2 ? `<p>${card.sig2}</p>` : ''}
         </div>
       </div>
+      `}
     </div>
 
     <div class="lightbox" id="lightbox">
@@ -105,7 +110,8 @@ function renderHeartReveal(app, card, photos, wishes) {
 
     // Animate heart draw, then reveal text + more effects
     animateHeart(canvas).then(() => {
-        document.getElementById('heart-content').classList.add('show');
+        const heartContent = document.getElementById('heart-content');
+        if (heartContent) heartContent.classList.add('show');
         launchConfettiBurst();
 
         if (photos.length > 0) startFloatingPhotos(photos);
