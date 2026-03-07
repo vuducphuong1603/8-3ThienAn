@@ -1370,8 +1370,9 @@ body::before {
   overflow: hidden;
   border: 3px solid rgba(var(--accent-rgb), 0.35);
   box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.25);
+  opacity: 0;
+  transform: translateZ(0);
   animation: photoFloatUp linear both;
-  will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
