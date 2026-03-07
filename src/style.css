@@ -1,41 +1,41 @@
 /* ====== DESIGN SYSTEM - 8/3 GREETING APP ====== */
 
 :root {
-  /* Colors - Light Pastel Theme */
-  --color-bg-primary: #FFF0F5;
-  --color-bg-secondary: #FFE4EC;
+  /* Colors - Pastel Purple Theme */
+  --color-bg-primary: #F5F0FF;
+  --color-bg-secondary: #EDE4FD;
   --color-bg-card: rgba(255, 255, 255, 0.6);
   --color-bg-glass: rgba(255, 255, 255, 0.65);
-  --color-pink-light: #ffb6c1;
-  --color-pink: #ff69b4;
-  --color-pink-dark: #ff1493;
-  --color-rose: #e91e63;
-  --color-rose-deep: #c2185b;
-  --color-gold: #c8960c;
-  --color-gold-light: #d4a017;
-  --color-purple: #9c27b0;
-  --color-purple-light: #ce93d8;
-  --color-lavender: #e1bee7;
+  --color-pink-light: #D4B8E8;
+  --color-pink: #B388D9;
+  --color-pink-dark: #9B6DC6;
+  --color-rose: #8E5BB5;
+  --color-rose-deep: #7B4FA2;
+  --color-gold: #C0A060;
+  --color-gold-light: #D4B87A;
+  --color-purple: #7E57C2;
+  --color-purple-light: #B39DDB;
+  --color-lavender: #D1C4E9;
 
   /* RGB components for rgba() theming */
-  --accent-rgb: 255, 105, 180;
-  --accent2-rgb: 233, 30, 99;
-  --accent3-rgb: 156, 39, 176;
-  --gold-rgb: 200, 150, 12;
+  --accent-rgb: 179, 136, 217;
+  --accent2-rgb: 142, 91, 181;
+  --accent3-rgb: 126, 87, 194;
+  --gold-rgb: 192, 160, 96;
 
-  --color-text-primary: #3D2040;
-  --color-text-secondary: rgba(61, 32, 64, 0.75);
-  --color-text-muted: rgba(61, 32, 64, 0.48);
+  --color-text-primary: #2D1B4E;
+  --color-text-secondary: rgba(45, 27, 78, 0.75);
+  --color-text-muted: rgba(45, 27, 78, 0.48);
 
   /* Surface & border */
   --surface-input: rgba(255, 255, 255, 0.85);
   --surface-input-focus: rgba(255, 255, 255, 0.95);
-  --border-subtle: rgba(0, 0, 0, 0.06);
-  --border-medium: rgba(0, 0, 0, 0.1);
+  --border-subtle: rgba(126, 87, 194, 0.08);
+  --border-medium: rgba(126, 87, 194, 0.14);
 
   /* Gradients */
-  --gradient-main: linear-gradient(135deg, #ff69b4 0%, #e91e63 50%, #9c27b0 100%);
-  --gradient-warm: linear-gradient(135deg, #ff69b4 0%, #ff1493 50%, #ff6b9d 100%);
+  --gradient-main: linear-gradient(135deg, #B388D9 0%, #9575CD 50%, #7E57C2 100%);
+  --gradient-warm: linear-gradient(135deg, #D4B8E8 0%, #B388D9 50%, #C9A6E4 100%);
   --gradient-glow: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.15) 0%, transparent 70%);
   --gradient-card: linear-gradient(145deg, rgba(var(--accent-rgb), 0.06) 0%, rgba(var(--accent3-rgb), 0.04) 100%);
 
