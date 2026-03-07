@@ -44,29 +44,61 @@ export function renderBirthdayPage() {
             const { data, error } = await supabase
                 .from('recipients')
                 .select('*, greeting_cards(*)')
-                .eq('birthday', birthday)
-                .limit(1)
-                .maybeSingle();
+                .eq('birthday', birthday);
 
             if (error) throw error;
 
-            if (!data) {
+            if (!data || data.length === 0) {
                 showError(errorMsg, 'Không tìm thấy thông tin. Vui lòng kiểm tra lại ngày sinh! 🤔');
                 btnSubmit.innerHTML = '✨ Xem Thiệp Chúc Mừng';
                 btnSubmit.disabled = false;
                 return;
             }
 
-            // Store data for next pages and apply theme
-            window.__greetingData = data;
-            applyCardTheme();
-            window.location.hash = '#greeting';
+            if (data.length === 1) {
+                // Only one recipient — go straight to greeting
+                window.__greetingData = data[0];
+                applyCardTheme();
+                window.location.hash = '#greeting';
+            } else {
+                // Multiple recipients with same birthday — show name picker
+                showNamePicker(data);
+            }
         } catch (err) {
             console.error(err);
             showError(errorMsg, 'Có lỗi xảy ra, vui lòng thử lại! 😢');
             btnSubmit.innerHTML = '✨ Xem Thiệp Chúc Mừng';
             btnSubmit.disabled = false;
         }
+    });
+}
+
+function showNamePicker(recipients) {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+    <div class="page-container">
+      <div class="glass-card birthday-page name-picker-page">
+        <span class="logo-icon">🌹</span>
+        <h1>Happy Women's Day</h1>
+        <p class="subtitle">Em là :</p>
+        <div class="name-picker-buttons">
+          ${recipients.map((r, i) => `
+            <button class="btn-name-pick" data-index="${i}">${r.name}</button>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+    createFloatingParticles();
+
+    app.querySelectorAll('.btn-name-pick').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.getAttribute('data-index'));
+            window.__greetingData = recipients[index];
+            applyCardTheme();
+            window.location.hash = '#greeting';
+        });
     });
 }
 

@@ -212,6 +212,62 @@ body::before {
   font-weight: 300;
 }
 
+/* Name picker (multiple recipients with same birthday) */
+.name-picker-page .subtitle {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+  font-weight: 600;
+}
+
+.name-picker-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.btn-name-pick {
+  padding: var(--space-md) var(--space-xl);
+  background: var(--gradient-main);
+  border: none;
+  border-radius: var(--radius-full);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+}
+
+.btn-name-pick::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-name-pick:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-name-pick:hover::before {
+  left: 100%;
+}
+
+.btn-name-pick:active {
+  transform: translateY(0);
+}
+
 .input-group {
   margin-bottom: var(--space-lg);
   text-align: left;
