@@ -28,7 +28,6 @@ export function renderGreetingPage() {
               </div>
             </div>
           </div>
-          <p class="bq-hint">✨ Bấm vào thiệp để mở ✨</p>
         </div>
       </div>
 
