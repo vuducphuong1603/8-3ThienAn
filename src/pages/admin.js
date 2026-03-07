@@ -292,6 +292,16 @@ async function renderCardEditor() {
       </div>
 
       <div class="admin-section">
+        <h2>✨ Lời Chúc Bay <span id="wishes-count" style="font-size:0.85em; font-weight:normal; color: var(--color-text-muted)"></span></h2>
+        <p style="color: var(--color-text-muted); margin-bottom: 12px; font-size: 0.9em;">Các dòng chữ sẽ bay lên xen kẽ với hình ảnh (tối đa 20 câu)</p>
+        <div id="wishes-list" class="wishes-list"></div>
+        <div class="add-wish-form" id="add-wish-form" style="display:flex; gap:8px; margin-top:12px;">
+          <input type="text" id="new-wish-input" placeholder="VD: Chúc em luôn xinh đẹp 💕" style="flex:1;" />
+          <button class="btn-primary" id="btn-add-wish" style="width:auto; padding: 0.5rem 1.2rem;">➕ Thêm</button>
+        </div>
+      </div>
+
+      <div class="admin-section">
         <h2>📸 Ảnh Kỷ Niệm <span id="photo-count" style="font-size:0.85em; font-weight:normal; color: var(--color-text-muted)"></span></h2>
         <div class="upload-area" id="upload-area">
           <div class="upload-icon">📁</div>
@@ -328,11 +338,18 @@ async function renderCardEditor() {
 
     // Load data
     await loadCardData();
+    await loadWishes();
     await loadRecipients();
     await loadPhotos();
 
     // Event listeners
     document.getElementById('btn-back').addEventListener('click', renderCardList);
+
+    // Wishes
+    document.getElementById('btn-add-wish').addEventListener('click', addWish);
+    document.getElementById('new-wish-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addWish();
+    });
 
     document.getElementById('btn-preview').addEventListener('click', () => {
         window.open(window.location.origin, '_blank');
@@ -547,6 +564,124 @@ async function updatePhotoUrls(paths) {
         .from('greeting_cards')
         .update({ photo_urls: paths })
         .eq('id', currentCardId);
+}
+
+// ==================== FLOATING WISHES ====================
+
+const MAX_WISHES = 20;
+
+async function loadWishes() {
+    const { data, error } = await supabase
+        .from('greeting_cards')
+        .select('floating_wishes')
+        .eq('id', currentCardId)
+        .maybeSingle();
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const wishes = data?.floating_wishes || [];
+    renderWishesList(wishes);
+}
+
+function renderWishesList(wishes) {
+    const listEl = document.getElementById('wishes-list');
+    const countEl = document.getElementById('wishes-count');
+    const addForm = document.getElementById('add-wish-form');
+
+    if (countEl) countEl.textContent = `(${wishes.length}/${MAX_WISHES})`;
+    if (addForm) addForm.style.display = wishes.length >= MAX_WISHES ? 'none' : 'flex';
+
+    if (!wishes || wishes.length === 0) {
+        listEl.innerHTML = '<p style="color: var(--color-text-muted);">Chưa có lời chúc bay nào</p>';
+        return;
+    }
+
+    listEl.innerHTML = wishes.map((wish, i) => `
+        <div class="wish-item" style="display:flex; align-items:center; gap:8px; padding:8px 12px; margin-bottom:6px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+            <span style="flex:1; color: var(--color-text-primary);">${wish}</span>
+            <button class="action-btn delete wish-delete-btn" data-index="${i}" style="padding:4px 8px; font-size:0.85em;">✕</button>
+        </div>
+    `).join('');
+
+    listEl.querySelectorAll('.wish-delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const idx = parseInt(btn.getAttribute('data-index'));
+            await deleteWish(idx);
+        });
+    });
+}
+
+async function addWish() {
+    const input = document.getElementById('new-wish-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const { data, error } = await supabase
+        .from('greeting_cards')
+        .select('floating_wishes')
+        .eq('id', currentCardId)
+        .maybeSingle();
+
+    if (error) {
+        console.error(error);
+        showToast('Lỗi thêm lời chúc! ❌', 'error');
+        return;
+    }
+
+    const wishes = data?.floating_wishes || [];
+    if (wishes.length >= MAX_WISHES) {
+        showToast(`Đã đạt tối đa ${MAX_WISHES} lời chúc! ❌`, 'error');
+        return;
+    }
+
+    wishes.push(text);
+    const { error: updateError } = await supabase
+        .from('greeting_cards')
+        .update({ floating_wishes: wishes })
+        .eq('id', currentCardId);
+
+    if (updateError) {
+        console.error(updateError);
+        showToast('Lỗi lưu lời chúc! ❌', 'error');
+        return;
+    }
+
+    input.value = '';
+    showToast('Đã thêm lời chúc! ✨', 'success');
+    renderWishesList(wishes);
+}
+
+async function deleteWish(index) {
+    const { data, error } = await supabase
+        .from('greeting_cards')
+        .select('floating_wishes')
+        .eq('id', currentCardId)
+        .maybeSingle();
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const wishes = data?.floating_wishes || [];
+    wishes.splice(index, 1);
+
+    const { error: updateError } = await supabase
+        .from('greeting_cards')
+        .update({ floating_wishes: wishes })
+        .eq('id', currentCardId);
+
+    if (updateError) {
+        console.error(updateError);
+        showToast('Lỗi xóa lời chúc! ❌', 'error');
+        return;
+    }
+
+    showToast('Đã xóa lời chúc! 🗑️', 'success');
+    renderWishesList(wishes);
 }
 
 // ==================== RECIPIENTS (per card) ====================

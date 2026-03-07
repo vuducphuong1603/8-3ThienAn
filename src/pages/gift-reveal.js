@@ -1,4 +1,4 @@
-import { startFallingFlowers, startFloatingHearts, launchConfettiBurst, startFloatingPhotos } from '../effects.js';
+import { startFallingFlowers, startFloatingHearts, launchConfettiBurst, startFloatingPhotos, startFloatingWishes } from '../effects.js';
 import { SUPABASE_URL } from '../lib/supabase.js';
 
 export function renderGiftRevealPage() {
@@ -52,6 +52,12 @@ export function renderGiftRevealPage() {
     // Floating photos effect - fly from bottom to top continuously
     if (photos.length > 0) {
         startFloatingPhotos(photos);
+    }
+
+    // Floating wishes - text flies up interleaved with photos
+    const wishes = card.floating_wishes || [];
+    if (wishes.length > 0) {
+        setTimeout(() => startFloatingWishes(wishes), 1000);
     }
 
     // Lightbox functionality

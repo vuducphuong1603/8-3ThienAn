@@ -1349,6 +1349,52 @@ body::before {
   }
 }
 
+/* ====== FLOATING WISHES ====== */
+.floating-wish {
+  position: fixed;
+  bottom: -60px;
+  z-index: 55;
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(233, 30, 99, 0.5), 0 0 20px rgba(255, 105, 180, 0.3);
+  background: linear-gradient(135deg, rgba(255, 105, 180, 0.25), rgba(233, 30, 99, 0.2));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: wishFloatUp linear forwards;
+  will-change: transform, opacity;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes wishFloatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg) translateX(0) scale(0.6);
+  }
+  8% {
+    opacity: 1;
+    transform: translateY(-8vh) rotate(calc(var(--wish-rotate) * 0.3)) translateX(calc(var(--wish-drift) * 0.2)) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(-55vh) rotate(var(--wish-rotate)) translateX(var(--wish-drift)) scale(1);
+  }
+  85% {
+    opacity: 0.5;
+    transform: translateY(-95vh) rotate(calc(var(--wish-rotate) * 0.5)) translateX(calc(var(--wish-drift) * 0.6)) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120vh) rotate(0deg) translateX(calc(var(--wish-drift) * 0.8)) scale(0.7);
+  }
+}
+
 /* ====== CONFETTI ====== */
 .confetti-piece {
   position: fixed;

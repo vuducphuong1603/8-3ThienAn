@@ -157,9 +157,55 @@ export function stopFloatingPhotos() {
     }
 }
 
+export function startFloatingWishes(wishes) {
+    let index = 0;
+
+    function createFloatingWish() {
+        const text = wishes[index % wishes.length];
+        index++;
+
+        const duration = Math.random() * 4 + 7; // 7s - 11s
+
+        const el = document.createElement('div');
+        el.className = 'floating-wish';
+        el.textContent = text;
+        el.style.left = (Math.random() * 60 + 10) + '%';
+        el.style.animationDuration = duration + 's';
+
+        const rotate = Math.random() * 10 - 5;
+        el.style.setProperty('--wish-rotate', rotate + 'deg');
+        const drift = Math.random() * 80 - 40;
+        el.style.setProperty('--wish-drift', drift + 'px');
+
+        // Random font size
+        const fontSize = Math.random() * 0.3 + 0.85;
+        el.style.fontSize = fontSize + 'rem';
+
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), duration * 1000 + 500);
+    }
+
+    // Stagger initial batch
+    for (let i = 0; i < Math.min(wishes.length, 2); i++) {
+        setTimeout(createFloatingWish, i * 1200);
+    }
+
+    // Keep creating, offset from photos (photos every 2s, wishes every 3s)
+    const interval = setInterval(createFloatingWish, 3000);
+    window.__floatingWishInterval = interval;
+}
+
+export function stopFloatingWishes() {
+    if (window.__floatingWishInterval) {
+        clearInterval(window.__floatingWishInterval);
+        window.__floatingWishInterval = null;
+    }
+}
+
 export function cleanupEffects() {
     stopFallingFlowers();
     stopFloatingHearts();
     stopFloatingPhotos();
-    document.querySelectorAll('.flower, .float-heart, .confetti-piece, .floating-photo').forEach(el => el.remove());
+    stopFloatingWishes();
+    document.querySelectorAll('.flower, .float-heart, .confetti-piece, .floating-photo, .floating-wish').forEach(el => el.remove());
 }
