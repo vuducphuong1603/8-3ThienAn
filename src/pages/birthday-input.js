@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js';
+import { applyCardTheme } from '../theme.js';
 
 export function renderBirthdayPage() {
     const app = document.getElementById('app');
@@ -56,8 +57,9 @@ export function renderBirthdayPage() {
                 return;
             }
 
-            // Store data for next pages
+            // Store data for next pages and apply theme
             window.__greetingData = data;
+            applyCardTheme();
             window.location.hash = '#greeting';
         } catch (err) {
             console.error(err);

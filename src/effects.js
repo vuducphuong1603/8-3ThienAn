@@ -64,8 +64,22 @@ export function stopFloatingHearts() {
     }
 }
 
+function getThemeColors() {
+    const s = getComputedStyle(document.documentElement);
+    return [
+        s.getPropertyValue('--color-pink').trim(),
+        s.getPropertyValue('--color-rose').trim(),
+        s.getPropertyValue('--color-gold').trim(),
+        s.getPropertyValue('--color-purple').trim(),
+        s.getPropertyValue('--color-pink-light').trim(),
+        s.getPropertyValue('--color-purple-light').trim(),
+        s.getPropertyValue('--color-pink-dark').trim(),
+        s.getPropertyValue('--color-lavender').trim(),
+    ];
+}
+
 export function launchConfettiBurst() {
-    const colors = ['#ff69b4', '#e91e63', '#ffd700', '#9c27b0', '#ff6b9d', '#ce93d8', '#ffb6c1', '#ff1493'];
+    const colors = getThemeColors();
 
     for (let i = 0; i < 80; i++) {
         const confetti = document.createElement('div');

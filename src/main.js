@@ -4,6 +4,7 @@ import { renderGreetingPage } from './pages/greeting.js';
 import { renderGiftRevealPage } from './pages/gift-reveal.js';
 import { renderAdminPage } from './pages/admin.js';
 import { cleanupEffects } from './effects.js';
+import { applyCardTheme } from './theme.js';
 
 // Simple hash-based router
 function router() {
@@ -14,15 +15,19 @@ function router() {
 
     switch (hash) {
         case '#greeting':
+            applyCardTheme();
             renderGreetingPage();
             break;
         case '#reveal':
+            applyCardTheme();
             renderGiftRevealPage();
             break;
         case '#admin':
+            document.documentElement.removeAttribute('data-theme');
             renderAdminPage();
             break;
         default:
+            document.documentElement.removeAttribute('data-theme');
             renderBirthdayPage();
             break;
     }

@@ -287,6 +287,14 @@ async function renderCardEditor() {
             <label>Trích dẫn cuối</label>
             <textarea id="final_quote" placeholder="Trích dẫn hay..."></textarea>
           </div>
+          <div class="input-group">
+            <label>🎨 Tone màu</label>
+            <select id="theme">
+              <option value="default">Hồng cổ điển</option>
+              <option value="soft-pink">Hồng pastel</option>
+              <option value="ocean-blue">Xanh dương</option>
+            </select>
+          </div>
           <button class="btn-primary" id="btn-save-card">💾 Lưu Thiệp</button>
         </div>
       </div>
@@ -365,7 +373,7 @@ async function renderCardEditor() {
     uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
         uploadArea.style.borderColor = 'var(--color-pink)';
-        uploadArea.style.background = 'rgba(255, 105, 180, 0.1)';
+        uploadArea.style.background = 'rgba(var(--accent-rgb), 0.1)';
     });
     uploadArea.addEventListener('dragleave', () => {
         uploadArea.style.borderColor = '';
@@ -396,7 +404,7 @@ async function loadCardData() {
     }
 
     if (data) {
-        const fields = ['welcome_title', 'sub_heading', 'para1', 'para2', 'para3', 'para4', 'sig1', 'sig2', 'final_sub', 'final_quote'];
+        const fields = ['welcome_title', 'sub_heading', 'para1', 'para2', 'para3', 'para4', 'sig1', 'sig2', 'final_sub', 'final_quote', 'theme'];
         fields.forEach(field => {
             const el = document.getElementById(field);
             if (el && data[field]) el.value = data[field];
@@ -420,6 +428,7 @@ async function saveCard() {
         sig2: document.getElementById('sig2').value,
         final_sub: document.getElementById('final_sub').value,
         final_quote: document.getElementById('final_quote').value,
+        theme: document.getElementById('theme').value,
     };
 
     try {
@@ -600,10 +609,11 @@ function renderWishesList(wishes) {
     }
 
     listEl.innerHTML = wishes.map((wish, i) => `
-        <div class="wish-item" style="display:flex; align-items:center; gap:8px; padding:8px 12px; margin-bottom:6px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+        <div class="wish-item" style="display:flex; align-items:center; gap:8px; padding:8px 12px; margin-bottom:6px; background:rgba(var(--accent-rgb),0.06); border-radius:10px; border:1px solid var(--border-subtle);">
             <span style="flex:1; color: var(--color-text-primary);">${wish}</span>
             <button class="action-btn delete wish-delete-btn" data-index="${i}" style="padding:4px 8px; font-size:0.85em;">✕</button>
         </div>
+
     `).join('');
 
     listEl.querySelectorAll('.wish-delete-btn').forEach(btn => {

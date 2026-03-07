@@ -187,7 +187,16 @@ function typewriterSequence(container, paragraphs, index, onComplete) {
 }
 
 function launchConfetti() {
-    const colors = ['#ff69b4', '#e91e63', '#ffd700', '#9c27b0', '#ff6b9d', '#ce93d8', '#ffb6c1'];
+    const s = getComputedStyle(document.documentElement);
+    const colors = [
+        s.getPropertyValue('--color-pink').trim(),
+        s.getPropertyValue('--color-rose').trim(),
+        s.getPropertyValue('--color-gold').trim(),
+        s.getPropertyValue('--color-purple').trim(),
+        s.getPropertyValue('--color-pink-light').trim(),
+        s.getPropertyValue('--color-purple-light').trim(),
+        s.getPropertyValue('--color-pink-dark').trim(),
+    ];
     for (let i = 0; i < 50; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti-piece';
