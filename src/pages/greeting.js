@@ -8,6 +8,8 @@ export function renderGreetingPage() {
   }
 
   const card = data.greeting_cards;
+  const theme = card.theme || 'default';
+  const bouquetSrc = (theme === 'soft-pink') ? '/bouquet-purple.png' : '/bouquet.png';
   const app = document.getElementById('app');
 
   app.innerHTML = `
@@ -20,7 +22,7 @@ export function renderGreetingPage() {
       <div class="bq-scene">
         <div class="bq-bouquet">
           <div class="bq-image-wrap">
-            <img src="/bouquet.png" alt="Bó hoa" class="bq-image" />
+            <img src="${bouquetSrc}" alt="Bó hoa" class="bq-image" />
             <div class="bq-card-tag" id="bq-envelope">
               <div class="bq-card-tag-inner">
                 <span class="bq-card-tag-icon">💌</span>
