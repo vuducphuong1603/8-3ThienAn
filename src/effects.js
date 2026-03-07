@@ -147,12 +147,11 @@ export function startFloatingPhotos(photoUrls) {
             setTimeout(() => container.remove(), duration * 1000 + 500);
         };
 
-        // If already cached, add immediately; otherwise wait for load
-        if (img.complete) {
+        // Use decode() to ensure image is fully decoded before rendering (prevents flickering)
+        img.decode().then(addToDOM).catch(() => {
+            // Fallback: still add even if decode fails
             addToDOM();
-        } else {
-            img.onload = addToDOM;
-        }
+        });
     }
 
     // Launch initial batch staggered
