@@ -2033,3 +2033,43 @@ body::before {
 [data-theme="ocean-blue"] .bq-top-text {
   margin-bottom: var(--space-xl);
 }
+
+/* Ocean blue: reveal page - title readable */
+[data-theme="ocean-blue"] .reveal-title {
+  background: linear-gradient(135deg, #fff 0%, #e0ecff 50%, #fff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 50, 0.8));
+}
+
+/* Ocean blue: reveal quote readable */
+[data-theme="ocean-blue"] .reveal-quote {
+  color: #fff;
+  background: rgba(0, 40, 120, 0.5);
+  border-left-color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 50, 0.6);
+}
+
+/* Ocean blue: glass card with solid white background */
+[data-theme="ocean-blue"] .reveal-greeting {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+}
+
+[data-theme="ocean-blue"] .reveal-greeting p {
+  color: #1A2540;
+}
+
+/* Ocean blue: signature readable */
+[data-theme="ocean-blue"] .reveal-signature {
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 50, 0.7);
+}
+
+/* Ocean blue: floating wishes readable */
+[data-theme="ocean-blue"] .floating-wish {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1A2540;
+  border-color: rgba(100, 149, 237, 0.4);
+}
